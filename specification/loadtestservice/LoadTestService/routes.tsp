@@ -451,7 +451,7 @@ interface TestProfileAdministration {
 
   @summary("Get load test profile details by test profile Id")
   @doc("Get load test profile details by test profile Id")
-  getTest is StandardResourceOperations.ResourceRead<TestProfile>;
+  getTestProfile is StandardResourceOperations.ResourceRead<TestProfile>;
 
   @summary("""
   Get all load test profiles by the fully qualified resource Id e.g

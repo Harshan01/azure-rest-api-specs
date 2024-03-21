@@ -282,43 +282,45 @@ union AuthenticationKind {
   ManagedIdentity: "ManagedIdentity"
 }
 
-@doc("Performance tuner configurations kind")
+@doc("Kind of resource configurations for test profiles.")
 @added(APIVersions.v2024_03_01_preview)
-union PerformanceTunerConfigurationKind {
+union TestProfileResourceConfigurationKind {
   string,
 
   @doc("Functions App with Flex Consumption Plan")
   FunctionsFlexConsumption: "FunctionsFlexConsumption"
 }
 
-@doc("Performance tuner configurations on which the test profile will run.")
+@doc("Test profile resource configurations of the source resource on which the test profile will run.")
 @added(APIVersions.v2024_03_01_preview)
-model PerformanceTunerConfiguration {
+@discriminator("resourceConfigurationKind")
+model TestProfileResourceConfiguration {
   @doc("""
-  Kind of the performance tuner configuration.
+  Kind of the resource configuration.
   This corresponds to the type of source resource on which the test profile is created.
   """)
-  performanceTunerConfigurationKind: PerformanceTunerConfigurationKind
+  resourceConfigurationKind: TestProfileResourceConfigurationKind
 }
 
-@doc("Performance tuner configurations for a Flex Consumption based Azure Function App.")
+@doc("Resource configurations for a Flex Consumption based Azure Function App.")
 @added(APIVersions.v2024_03_01_preview)
-model FunctionFlexConsumptionPerformanceTunerConfigurations {
+model FunctionFlexConsumptionResourceConfigurations
+extends TestProfileResourceConfiguration {
   @doc("""
-  Kind of the performance tuner configuration.
+  Kind of the resource configuration.
   This corresponds to the type of source resource on which the test profile is created.
   This should not typically change its value for Function app with flex consumption plan.
   """)
-  performanceTunerConfigurationKind: PerformanceTunerConfigurationKind.FunctionsFlexConsumption;
+  resourceConfigurationKind: TestProfileResourceConfigurationKind.FunctionsFlexConsumption;
 
   @doc("List of configurations for a flex consumption based Function app on which the test profile will run.")
-  configurations: Record<FunctionFlexConsumptionPerfomanceTunerConfiguration>;
+  configurations: Record<FunctionFlexConsumptionResourceConfiguration>;
 
 }
 
-@doc("Performance tuner configuration instance for a Flex Consumption based Azure Function App.")
+@doc("Resource configuration instance for a Flex Consumption based Azure Function App.")
 @added(APIVersions.v2024_03_01_preview)
-model FunctionFlexConsumptionPerfomanceTunerConfiguration {
+model FunctionFlexConsumptionResourceConfiguration {
   @doc("Instance size of function app. Supported values are 512, 2048, 2096.")
   instanceSize: int64;
 
@@ -387,10 +389,10 @@ model TestProfile {
   authentication: TestProfileAuthentication;
 
   @doc("""
-  Performance tuner configuration for the test profile.
+  Resource configuration for the test profile.
   Pick the correct kind of configuration for the associated source resource type.
   """)
-  performanceTunerConfiguration: PerformanceTunerConfiguration;
+  resourceConfiguration: TestProfileResourceConfiguration;
 
   ...SystemMetaData;
 }
@@ -869,11 +871,11 @@ model TestProfileRun {
   authentication: TestProfileAuthentication;
 
   @doc("""
-  Performance tuner configuration for the test profile.
+  Resource configuration for the test profile.
   Pick the correct kind of configuration for the associated source resource type.
   """)
   @visibility("read")
-  performanceTunerConfiguration: PerformanceTunerConfiguration;
+  resourceConfiguration: TestProfileResourceConfiguration;
   // End section: Properties populated from test profile
 
   // Begin section: Test profile run specific properties
